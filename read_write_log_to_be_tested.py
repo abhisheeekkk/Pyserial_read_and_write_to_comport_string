@@ -1,5 +1,6 @@
 import serial
 import time
+from datetime import datetime
 
 com_port = 'COM4'
 baud_rate = 115200
@@ -18,16 +19,16 @@ def main():
     with serial.Serial(com_port, baud_rate, timeout=1) as ser:
         with open(output_file, 'a') as file:
             while True:
-                timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                 file.write(f'Timestamp: {timestamp}\n')
                 file.write('Command: ' + ' '.join(hex(byte) for byte in command) + '\n')
-                
+
                 write_command_to_comport(ser, command)
                 time.sleep(interval)
-                
+
                 response = read_response_from_comport(ser)
                 file.write('Response: ' + ' '.join(hex(byte) for byte in response) + '\n\n')
-                
+
                 time.sleep(interval)
 
 if __name__ == '__main__':
